@@ -1,0 +1,4 @@
+<launch>
+  <node pkg="motor_ctrl" type="motor_ctrl" name="motor_ctrl_node" launch-prefix="sudo" />
+
+</launch>

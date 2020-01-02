@@ -1,10 +1,9 @@
 cmake_minimum_required(VERSION 2.8.3)
-project(motor_ctrl)
+project(uwb)
 
 ## Compile as C++11, supported in ROS Kinetic and newer
-add_compile_options(-std=c++11 -lpigpio -lpigpiod_if2 -lrt -pthread)
+add_compile_options(-std=c++11)
 
-link_directories(/usr/local/lib)
 ## Find catkin macros and libraries
 ## if COMPONENTS list like find_package(catkin REQUIRED COMPONENTS xyz)
 ## is used, also find other catkin packages
@@ -14,10 +13,6 @@ find_package(catkin REQUIRED COMPONENTS
   std_msgs
   message_generation
 )
-
-# pigpio library
-FIND_LIBRARY(PIGPIO_LIBRARY pigpio /usr/local/lib/)
-FIND_LIBRARY(PIGPIO_D_LIBRARY pigpiod_if2 /usr/local/lib/)
 
 ## System dependencies are found with CMake's conventions
 # find_package(Boost REQUIRED COMPONENTS system)
@@ -53,17 +48,17 @@ FIND_LIBRARY(PIGPIO_D_LIBRARY pigpiod_if2 /usr/local/lib/)
 ##   * add every package in MSG_DEP_SET to generate_messages(DEPENDENCIES ...)
 
 ## Generate messages in the 'msg' folder
-# add_message_files(
-#   FILES
-#   Message1.msg
-#   Message2.msg
-# )
+add_message_files(
+  FILES
+  UwbData.msg
+)
 
 ## Generate services in the 'srv' folder
-add_service_files(
-  FILES
-  SetMotor.srv
-)
+# add_service_files(
+#   FILES
+#   Service1.srv
+#   Service2.srv
+# )
 
 ## Generate actions in the 'action' folder
 # add_action_files(
@@ -108,9 +103,9 @@ generate_messages(
 ## CATKIN_DEPENDS: catkin_packages dependent projects also need
 ## DEPENDS: system dependencies of this project that dependent projects also need
 catkin_package(
-  INCLUDE_DIRS include
-#  LIBRARIES motor_ctrl
-  CATKIN_DEPENDS roscpp rospy std_msgs message_runtime
+ INCLUDE_DIRS include
+#  LIBRARIES uwb
+ CATKIN_DEPENDS roscpp rospy std_msgs message_runtime
 #  DEPENDS system_lib
 )
 
@@ -127,25 +122,18 @@ include_directories(
 
 ## Declare a C++ library
 # add_library(${PROJECT_NAME}
-#   src/${PROJECT_NAME}/motor_ctrl.cpp
+#   src/${PROJECT_NAME}/uwb.cpp
 # )
-
-## Declare a C++ executable
-## With catkin_make all packages are built within a single CMake context
-## The recommended prefix ensures that target names across packages don't collide
-add_executable(${PROJECT_NAME} src/motor_ctrl_node.cpp src/motor_ctrl.cpp src/demobot.cpp)
-
-## Specify libraries to link a library or executable target against
-target_link_libraries(${PROJECT_NAME}
- ${catkin_LIBRARIES}
- ${PIGPIO_LIBRARY}
- ${PIGPIO_D_LIBRARY}
-)
 
 ## Add cmake target dependencies of the library
 ## as an example, code may need to be generated before libraries
 ## either from message generation or dynamic reconfigure
-# add_dependencies(${PROJECT_NAME} ${catkin_EXPORTED_TARGETS})
+# add_dependencies(${PROJECT_NAME} ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
+
+## Declare a C++ executable
+## With catkin_make all packages are built within a single CMake context
+## The recommended prefix ensures that target names across packages don't collide
+add_executable(${PROJECT_NAME} src/uwb_node.cpp src/uwb.cpp)
 
 ## Rename C++ executable without prefix
 ## The above recommended prefix causes long target names, the following renames the
@@ -155,9 +143,14 @@ target_link_libraries(${PROJECT_NAME}
 
 ## Add cmake target dependencies of the executable
 ## same as for the library above
-add_dependencies(${PROJECT_NAME} ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
+# add_dependencies(${PROJECT_NAME}_node ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
 
-add_dependencies(${PROJECT_NAME} ${PROJECT_NAME}_generate_messages_cpp)
+## Specify libraries to link a library or executable target against
+target_link_libraries(${PROJECT_NAME}
+  ${catkin_LIBRARIES}
+)
+add_dependencies(${PROJECT_NAME} ${catkin_EXPORTED_TARGETS})
+add_dependencies(${PROJECT_NAME} uwb_generate_messages_cpp)
 
 #############
 ## Install ##
@@ -199,7 +192,7 @@ add_dependencies(${PROJECT_NAME} ${PROJECT_NAME}_generate_messages_cpp)
 #############
 
 ## Add gtest based cpp test target and link libraries
-# catkin_add_gtest(${PROJECT_NAME}-test test/test_motor_ctrl.cpp)
+# catkin_add_gtest(${PROJECT_NAME}-test test/test_uwb.cpp)
 # if(TARGET ${PROJECT_NAME}-test)
 #   target_link_libraries(${PROJECT_NAME}-test ${PROJECT_NAME})
 # endif()

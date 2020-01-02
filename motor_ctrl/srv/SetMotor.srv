@@ -1,0 +1,4 @@
+int8 motor_id
+float32 setpt
+---
+int8 status
