@@ -5,7 +5,7 @@ int main(int argc, char** argv){
 	ros::init(argc, argv, "motor_ctrl");
 	ros::NodeHandle n;
 	
-	DemoBot bot(n); // initialize the robot, spi-bus, and whatever else
+	DemoBot bot(n, "/dev/spidev0.0"); // initialize the robot, spi-bus, and whatever else
 
 	ROS_INFO("Starting main loop...");
 	while(ros::ok()){
@@ -14,6 +14,6 @@ int main(int argc, char** argv){
 		ros::spinOnce();
 	}
 	ROS_INFO("Exiting...");
-	bot.close();
+	bot.cleanup();
 	return 0;
 }

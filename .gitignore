@@ -57,3 +57,5 @@ CATKIN_IGNORE
 
 # Pictures
 *.png
+
+.vscode/*

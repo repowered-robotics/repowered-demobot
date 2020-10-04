@@ -5,7 +5,11 @@
 #include <motor_ctrl/SetMotor.h>
 #include <motor_ctrl/MotorData.h>
 #include <fcntl.h>
+#include <unistd.h>
+#include <sys/ioctl.h>
 #include <sys/stat.h>
+#include <linux/types.h>
+#include <linux/spi/spidev.h>
 #include <inttypes.h>
 #include <cstring>
 #include <cstdio>
@@ -24,8 +28,6 @@
 #define CTRL_MODE_POWER 	0
 #define CTRL_MODE_PWM 		1
 #define CTRL_MODE_RPM 		2
-
-const char* stm32_spi_path = "/dev/spidev0.0";
 
 enum STATUS {
 	STATUS_OK = 0,
@@ -52,7 +54,7 @@ enum REG_MAP {
 
 class DemoBot{
 public:
-	DemoBot(ros::NodeHandle nh);
+	DemoBot(ros::NodeHandle nh, std::string spi_path);
 	int set_motor_setpt(int mtr, float setpt);
 	int set_control_mode(int mode);
 	float get_motor_speed(int mtr);
@@ -62,7 +64,7 @@ public:
 	int get_timestamp();
 	void send_motor_updates();
 	bool set_motor_callback(motor_ctrl::SetMotor::Request& request, motor_ctrl::SetMotor::Response& response);
-	void close();
+	void cleanup();
 private:
 	ros::NodeHandle nh;
 	ros::ServiceServer set_motor_srv;

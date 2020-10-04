@@ -1,8 +1,8 @@
 #include <demobot.h>
 
-DemoBot::DemoBot(ros::NodeHandle nh){
+DemoBot::DemoBot(ros::NodeHandle nh, std::string spi_path){
 	this->nh = nh;
-	this->spi_handle = spi_init(stm32_spi_path);
+	this->spi_handle = spi_init(spi_path.c_str());
 	if(this->spi_handle < 0){
 		ROS_ERROR("SPI initialization failed.");
 	}else{
@@ -68,7 +68,7 @@ int DemoBot::read_reg(uint8_t reg_id, void* value){
     xfer[1].rx_buf 	= (unsigned long)data;
 	xfer[1].len 	= REG_DATA_SIZE;
 
-    status = ioctl(fd, SPI_IOC_MESSAGE(2), xfer);
+    status = ioctl(this->spi_handle, SPI_IOC_MESSAGE(2), xfer);
 	memcpy(value, data, REG_DATA_SIZE);
 
 	return status;
@@ -89,7 +89,7 @@ int DemoBot::write_reg(uint8_t reg_id, void* value){
     xfer[1].rx_buf 	= (unsigned long)value;
 	xfer[1].len 	= REG_DATA_SIZE;
 
-    status = ioctl(fd, SPI_IOC_MESSAGE(2), xfer);
+    status = ioctl(this->spi_handle, SPI_IOC_MESSAGE(2), xfer);
 
 	return status;
 }
@@ -163,6 +163,6 @@ int DemoBot::get_motor_pwm(int mtr){
 	return retval;
 }
 
-void DemoBot::close(){
+void DemoBot::cleanup(){
 	close(this->spi_handle);
 }
